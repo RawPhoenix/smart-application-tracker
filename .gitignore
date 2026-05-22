@@ -1,12 +1,66 @@
-# Virtual environment
+# =========================
+# Virtual Environments
+# =========================
 venv/
+.venv/
+env/
+
+# =========================
+# Environment Variables
+# =========================
 .env
 
-# Python cache
+# =========================
+# Python Cache
+# =========================
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
 
-# IDE files
+# =========================
+# Database Files
+# =========================
+*.db
+*.sqlite3
+instance/
+
+# =========================
+# Flask Session Files
+# =========================
+flask_session/
+
+# =========================
+# PyCharm / VS Code
+# =========================
 .idea/
 .vscode/
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Testing / Coverage
+# =========================
+.pytest_cache/
+.coverage
+htmlcov/
+
+# =========================
+# Build Files
+# =========================
+dist/
+build/
+*.egg-info/
+
+# =========================
+# Optional Uploads Folder
+# =========================
+uploads/

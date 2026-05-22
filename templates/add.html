@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header mb-4">
+    <h1 class="page-title">Add Application</h1>
+    <p class="page-subtitle mb-0">
+        Save a new job application and start tracking your progress.
+    </p>
+</div>
+
+<div class="card form-card shadow-sm border-0">
+    <div class="card-body p-4">
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <!-- Application Info -->
+            <section class="form-section">
+                <h5 class="form-section-title">
+                    <i class="bi bi-info-circle"></i>
+                    Application Info
+                </h5>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        {{ form.company.label(class="form-label") }}
+                        {{ form.company(class="form-control", placeholder="e.g. Google") }}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{ form.role.label(class="form-label") }}
+                        {{ form.role(class="form-control", placeholder="e.g. Software Engineer") }}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{ form.application_type.label(class="form-label") }}
+                        {{ form.application_type(class="form-select") }}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{ form.work_type.label(class="form-label", for="work_type") }}
+                        {{ form.work_type(class="form-select", id="work_type") }}
+                    </div>
+                </div>
+            </section>
+
+            <!-- Work Details -->
+            <section class="form-section">
+                <h5 class="form-section-title">
+                    <i class="bi bi-briefcase"></i>
+                    Work Details
+                </h5>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        {{ form.location.label(class="form-label", for="location") }}
+                        {{ form.location(class="form-control", id="location", placeholder="e.g. Mumbai") }}
+                    </div>
+
+                    <div class="col-md-6" id="office-address-group">
+                        {{ form.office_address.label(class="form-label") }}
+                        {{ form.office_address(class="form-control", id="office_address",
+                        placeholder="Google India Pvt Ltd, BKC, Mumbai") }}
+                    </div>
+
+                    <div class="col-md-6" id="maps-link-group">
+                        {{ form.maps_link.label(class="form-label") }}
+                        {{ form.maps_link(class="form-control", id="maps_link",
+                        placeholder="https://maps.google.com/...") }}
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tracking Details -->
+            <section class="form-section">
+                <h5 class="form-section-title">
+                    <i class="bi bi-kanban"></i>
+                    Application Tracking
+                </h5>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        {{ form.applied_via.label(class="form-label") }}
+                        {{ form.applied_via(class="form-select", id="appliedVia") }}
+                    </div>
+
+                    <div class="col-md-6" id="customField" style="display:none;">
+                        {{ form.applied_via_custom.label(class="form-label") }}
+                        {{ form.applied_via_custom(class="form-control",
+                        placeholder="Specify platform") }}
+                    </div>
+
+                    <div class="col-md-4">
+                        {{ form.status.label(class="form-label") }}
+                        {{ form.status(class="form-select", id="status") }}
+                    </div>
+
+                    <div class="col-md-4">
+                        {{ form.priority.label(class="form-label") }}
+                        {{ form.priority(class="form-select") }}
+                    </div>
+
+                    <div class="col-md-4">
+                        {{ form.date_applied.label(class="form-label") }}
+                        {{ form.date_applied(class="form-control") }}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{ form.follow_up_date.label(class="form-label") }}
+                        {{ form.follow_up_date(class="form-control", id="followUpDate") }}
+                        <div class="form-text">
+                            Leave blank to auto-set a follow-up date 7 days after application date.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Compensation & Contact -->
+            <section class="form-section">
+                <h5 class="form-section-title">
+                    <i class="bi bi-cash-stack"></i>
+                    Compensation & Contact
+                </h5>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        {{ form.salary.label(class="form-label") }}
+                        {{ form.salary(class="form-control",
+                        placeholder="e.g. ₹8 LPA / ₹20k stipend") }}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{ form.contact_name.label(class="form-label") }}
+                        {{ form.contact_name(class="form-control") }}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{ form.contact_email.label(class="form-label") }}
+                        {{ form.contact_email(class="form-control") }}
+                    </div>
+                </div>
+            </section>
+
+            <!-- Links & Notes -->
+            <section class="form-section">
+                <h5 class="form-section-title">
+                    <i class="bi bi-link-45deg"></i>
+                    Links & Notes
+                </h5>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        {{ form.application_link.label(class="form-label") }}
+                        {{ form.application_link(class="form-control",
+                        placeholder="https://...") }}
+                    </div>
+
+                    <div class="col-12">
+                        {{ form.notes.label(class="form-label") }}
+                        {{ form.notes(class="form-control notes-textarea",
+                        placeholder="Optional notes") }}
+                    </div>
+                </div>
+            </section>
+
+            <!-- Actions -->
+            <div class="form-actions d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Save Application
+                </button>
+
+                <a href="{{ url_for('home') }}"
+                   class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        // Applied Via logic
+        const select = document.getElementById("appliedVia");
+        const customField = document.getElementById("customField");
+
+        function toggleField() {
+            if (select.value === "Other") {
+                customField.style.display = "block";
+            } else {
+                customField.style.display = "none";
+            }
+        }
+
+        toggleField();
+        select.addEventListener("change", toggleField);
+
+
+        const statusField = document.getElementById("status");
+        const followUpField = document.getElementById("followUpDate");
+
+        function toggleFollowUp() {
+            const finalStatuses = ["Offer", "Rejected", "Withdrawn"];
+
+            if (finalStatuses.includes(statusField.value)) {
+                followUpField.value = "";
+                followUpField.disabled = true;
+                followUpField.style.opacity = "0.5";
+            } else {
+                followUpField.disabled = false;
+                followUpField.style.opacity = "1.0";
+            }
+        }
+
+        toggleFollowUp();
+        statusField.addEventListener("change", toggleFollowUp);
+
+        const workType = document.getElementById("work_type");
+        const location = document.getElementById("location");
+        const locationLabel = document.querySelector('label[for="location"]');
+
+        const addressGroup = document.getElementById("office-address-group");
+        const mapsGroup = document.getElementById("maps-link-group");
+
+        function updateLocationBehavior() {
+
+            let value = workType.value;
+
+            if (value === "Remote") {
+
+                location.required = false;
+                location.placeholder = "Remote / India / Global";
+                locationLabel.innerHTML = "Location (Optional)";
+
+                if (addressGroup) addressGroup.style.display = "none";
+                if (mapsGroup) mapsGroup.style.display = "none";
+
+            }
+
+            else if (value === "Hybrid" || value === "On-site") {
+
+                location.required = true;
+                location.placeholder = "e.g. Mumbai";
+                locationLabel.innerHTML = "Location *";
+
+                if (addressGroup) addressGroup.style.display = "block";
+                if (mapsGroup) mapsGroup.style.display = "block";
+
+            }
+
+            else if (value === "Flexible") {
+
+                location.required = false;
+                location.placeholder = "e.g. Mumbai / Flexible";
+                locationLabel.innerHTML = "Location (Recommended)";
+
+                if (addressGroup) addressGroup.style.display = "block";
+                if (mapsGroup) mapsGroup.style.display = "block";
+
+            }
+
+            else {
+
+                location.required = false;
+                location.placeholder = "e.g. Mumbai";
+                locationLabel.innerHTML = "Location";
+
+                if (addressGroup) addressGroup.style.display = "block";
+                if (mapsGroup) mapsGroup.style.display = "block";
+            }
+        }
+
+        workType.addEventListener("change", updateLocationBehavior);
+
+        updateLocationBehavior(); // run on page load
+
+    });
+</script>
+{% endblock %}

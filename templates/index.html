@@ -1,0 +1,600 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="dashboard-container">
+    <div class="row mb-4 g-3" style="margin-top: 28px;">
+
+        <!-- Total -->
+        <div class="col-md-3">
+            <div class="card stat-card primary">
+                <div class="card-body text-center">
+
+                    <i class="bi bi-briefcase stat-icon text-primary"></i>
+
+                    <div class="stat-number" id="total-count">
+                        {{ total_apps }}
+                    </div>
+
+                    <div class="stat-label">
+                        Total Applications
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Interviews -->
+        <div class="col-md-3">
+            <div class="card stat-card warning">
+                <div class="card-body text-center">
+
+                    <i class="bi bi-person-workspace stat-icon text-warning"></i>
+
+                    <div class="stat-number" id="interview-count">
+                        {{ interviews }}
+                    </div>
+
+                    <div class="stat-label">
+                        Interviews
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Offers -->
+        <div class="col-md-3">
+            <div class="card stat-card success">
+                <div class="card-body text-center">
+
+                    <i class="bi bi-trophy stat-icon text-success"></i>
+
+                    <div class="stat-number" id="offer-count">
+                        {{ offers }}
+                    </div>
+
+                    <div class="stat-label">
+                        Offers
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Rejected -->
+        <div class="col-md-3">
+            <div class="card stat-card danger">
+                <div class="card-body text-center">
+
+                    <i class="bi bi-x-circle stat-icon text-danger"></i>
+
+                    <div class="stat-number" id="rejected-count">
+                        {{ rejected }}
+                    </div>
+
+                    <div class="stat-label">
+                        Rejected
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    {% if followups_due > 0 or overdue_followups > 0 %}
+    <div class="followup-alert">
+
+        {% if followups_due > 0 %}
+        🔔 {{ followups_due }} due today
+        {% endif %}
+
+        {% if overdue_followups > 0 %}
+        <span class="overdue-text">
+⚠️ {{ overdue_followups }} overdue
+</span>
+        {% endif %}
+
+    </div>
+    {% endif %}
+
+    <div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="page-title mb-1">All Applications</h1>
+            <p class="page-subtitle mb-0">
+                Track, update, and prioritize your applications.
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <!-- Export CSV Button -->
+            <a href="{{ url_for('export_csv') }}"
+               class="btn btn-light border"
+               data-bs-toggle="tooltip"
+               data-bs-placement="bottom"
+               title="Download as CSV">
+                <i class="bi bi-download"></i>
+            </a>
+
+            <!-- Add Application Button -->
+            <a href="{{ url_for('add') }}"
+               class="page-add-btn">
+                <i class="bi bi-plus-lg me-1"></i>
+                Add Application
+            </a>
+
+        </div>
+    </div>
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <!-- Toolbar -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+
+                <!-- Status Filters -->
+                <div class="d-flex gap-2 flex-wrap">
+
+                    <a href="{{ url_for('home') }}"
+                       class="btn btn-sm {{ 'btn-dark' if not current_filter else 'btn-outline-dark' }}">
+                        All
+                    </a>
+
+                    <a href="{{ url_for('home', status='Applied') }}"
+                       class="btn btn-sm {{ 'btn-primary' if current_filter == 'Applied' else 'btn-outline-primary' }}">
+                        Applied
+                    </a>
+
+                    <a href="{{ url_for('home', status='Interview') }}"
+                       class="btn btn-sm {{ 'btn-warning' if current_filter == 'Interview' else 'btn-outline-warning' }}">
+                        Interview
+                    </a>
+
+                    <a href="{{ url_for('home', status='Offer') }}"
+                       class="btn btn-sm {{ 'btn-success' if current_filter == 'Offer' else 'btn-outline-success' }}">
+                        Offer
+                    </a>
+
+                    <a href="{{ url_for('home', status='Rejected') }}"
+                       class="btn btn-sm {{ 'btn-danger' if current_filter == 'Rejected' else 'btn-outline-danger' }}">
+                        Rejected
+                    </a>
+
+                    <a href="{{ url_for('home', status='Withdrawn') }}"
+                       class="btn btn-sm {{ 'btn-secondary' if current_filter == 'Withdrawn' else 'btn-outline-secondary' }}">
+                        Withdrawn
+                    </a>
+
+                </div>
+
+                <!-- Datatable Search injects here -->
+                <div id="searchBox"></div>
+
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table id="applicationsTable" class="table table-striped table-hover align-middle">
+                    <thead class="table-dark">
+                    <tr class="py-1">
+                        <th>ID</th>
+                        <th>Company</th>
+                        <th>Role</th>
+                        <th>Type</th>
+                        <th class="text-nowrap">Work Type</th>
+                        <th class="text-nowrap">Location</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th class="text-nowrap">Date Applied</th>
+                        <th class="text-nowrap">Follow Up</th>
+                        <th class="text-nowrap">Days Left</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for app in applications %}
+                    <tr>
+
+                        <td>{{ app.application_id }}</td>
+
+                        <td class="company-cell">{{ app.company_name }}</td>
+
+                        <td class="role-cell">{{ app.role }}</td>
+
+                        <td>
+            <span class=" meta-badge">
+                {{ app.application_type }}
+            </span>
+                        </td>
+
+                        <td>
+            <span class=" meta-badge">
+                {{ app.work_type }}
+            </span>
+                        </td>
+
+                        <td>{{ app.location }}</td>
+
+                        <td>
+
+                            {% if app.status == "Withdrawn" %}
+
+                            <span class="badge bg-secondary px-3 py-2">
+            Withdrawn
+        </span>
+
+                            {% else %}
+
+                            <select class="form-select form-select-sm status-select"
+                                    data-id="{{ app.application_id }}"
+                                    style="min-width:110px; font-weight:600;">
+
+                                <option value="Applied"
+                                        {{
+                                'selected' if app.status == 'Applied' else '' }}>
+                                Applied
+                                </option>
+
+                                <option value="Interview"
+                                        {{
+                                'selected' if app.status == 'Interview' else '' }}>
+                                Interview
+                                </option>
+
+                                <option value="Offer"
+                                        {{
+                                'selected' if app.status == 'Offer' else '' }}>
+                                Offer
+                                </option>
+
+                                <option value="Rejected"
+                                        {{
+                                'selected' if app.status == 'Rejected' else '' }}>
+                                Rejected
+                                </option>
+
+                            </select>
+
+                            {% endif %}
+
+                        </td>
+
+                        <!-- PRIORITY COLUMN -->
+                        <!-- PRIORITY COLUMN -->
+                        <td>
+                            <select class="form-select form-select-sm priority-select"
+                                    data-id="{{ app.application_id }}"
+                                    style="min-width:110px; font-weight:600;"
+                                    {% if app.status and app.status|trim|lower in ['rejected', 'withdrawn'] %}
+                            disabled
+                            {% endif %}>
+
+                            <option value="High"
+                                    {{
+                            'selected' if app.priority == 'High' else '' }}>
+                            High
+                            </option>
+
+                            <option value="Medium"
+                                    {{
+                            'selected' if app.priority == 'Medium' else '' }}>
+                            Medium
+                            </option>
+
+                            <option value="Low"
+                                    {{
+                            'selected' if app.priority == 'Low' else '' }}>
+                            Low
+                            </option>
+
+                            </select>
+                        </td>
+                        <td>{{ app.date_applied.strftime('%d %b %Y') }}</td>
+
+                        <td class="followup-cell">
+                            {% if app.status in ["Offer", "Rejected", "Withdrawn"] %}
+                            -
+                            {% else %}
+                            {{ app.follow_up_date.strftime('%d %b %Y') if app.follow_up_date else '-' }}
+                            {% endif %}
+                        </td>
+
+                        <td class="daysleft-cell text-center">
+
+                            {% if app.status in ["Offer", "Rejected", "Withdrawn"] %}
+                            -
+
+                            {% elif app.follow_up_date %}
+
+                            {% set diff = (app.follow_up_date - today).days %}
+
+                            {% if diff < 0 %}
+                            <span class="text-danger fw-semibold">Overdue</span>
+
+                            {% elif diff == 0 %}
+                            <span style="color:#c2410c; font-weight:600;">Today</span>
+
+                            {% else %}
+                            <span class="text-muted">
+                        {{ diff }} day{{ 's' if diff > 1 else '' }}
+                    </span>
+                            {% endif %}
+
+                            {% else %}
+                            -
+
+                            {% endif %}
+
+                        </td>
+
+                        <td class="text-center">
+                            <div class="actions-group d-flex justify-content-center gap-1 flex-nowrap">
+
+                                {% if app.status == "Withdrawn" %}
+
+                                <a href="{{ url_for('application_details', id=app.application_id) }}"
+                                   class="btn btn-sm btn-info action-btn details-btn">
+                                    Details
+                                </a>
+
+                                <a href="{{ url_for('reopen', application_id=app.application_id) }}"
+                                   class="btn btn-sm btn-reopen action-btn">
+                                    Reopen
+                                </a>
+
+                                <span class="action-placeholder"></span>
+
+                                <a href="{{ url_for('archive', application_id=app.application_id) }}"
+                                   class="btn btn-sm btn-outline-secondary icon-btn"
+                                   data-bs-toggle="tooltip"
+                                   title="Archive">
+                                    <i class="bi bi-archive"></i>
+                                </a>
+
+                                {% else %}
+
+                                <a href="{{ url_for('application_details', id=app.application_id) }}"
+                                   class="btn  action-btn details-btn">
+                                    Details
+                                </a>
+
+                                <a href="{{ url_for('update', application_id=app.application_id) }}"
+                                   class="btn  action-btn edit-btn">
+                                    Edit
+                                </a>
+
+                                <a href="{{ url_for('withdraw', application_id=app.application_id) }}"
+                                   class="btn  action-b
+                       tn withdraw-btn">
+                                    Withdraw
+                                </a>
+
+                                <a href="{{ url_for('archive', application_id=app.application_id) }}"
+                                   class="btn btn-sm btn-outline-secondary icon-btn"
+                                   data-bs-toggle="tooltip"
+                                   title="Archive">
+                                    <i class="bi bi-archive"></i>
+                                </a>
+
+                                {% endif %}
+
+                            </div>
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+
+        // ---------------- DATA TABLE ----------------
+        let table = $('#applicationsTable').DataTable({
+            pageLength: 5,
+            lengthChange: false,
+            ordering: true,
+            searching: true,
+            info: true,
+            autoWidth: false,
+            scrollX: true,
+
+            language: {
+                emptyTable: "No applications yet. Add your first job application.",
+                zeroRecords: "No matching applications found."
+            },
+
+            dom:
+                'f' +
+                'rt' +
+                '<"table-footer d-flex align-items-center mt-3"ip>'
+        });
+
+        // Move Search Box
+        $('.dataTables_filter').appendTo('#searchBox');
+        $('.dataTables_filter input')
+            .attr('placeholder', 'Search company, role...');
+
+        // ---------------- STATUS COLOR ----------------
+        function updateStatusColor(select) {
+            $(select).removeClass(
+                'status-applied status-interview status-offer status-rejected status-withdrawn'
+            );
+
+            let val = $(select).val();
+
+            if (val === "Applied") {
+                $(select).addClass('status-applied');
+            }
+            else if (val === "Interview") {
+                $(select).addClass('status-interview');
+            }
+            else if (val === "Offer") {
+                $(select).addClass('status-offer');
+            }
+            else if (val === "Rejected") {
+                $(select).addClass('status-rejected');
+            }
+            else {
+                $(select).addClass('status-withdrawn');
+            }
+
+            $(select).find('option').css({
+                'color': '#212529',
+                'background': '#ffffff'
+            });
+        }
+
+        // ---------------- PRIORITY COLOR ----------------
+        function updatePriorityColor(select) {
+            $(select).removeClass(
+                'priority-high priority-medium priority-low'
+            );
+
+            let val = $(select).val();
+
+            if (val === "High") {
+                $(select).addClass('priority-high');
+            }
+            else if (val === "Medium") {
+                $(select).addClass('priority-medium');
+            }
+            else {
+                $(select).addClass('priority-low');
+            }
+
+            $(select).find('option').css({
+                'color': '#212529',
+                'background': '#ffffff'
+            });
+        }
+
+        // ---------------- ENABLE / DISABLE PRIORITY ----------------
+        function updatePriorityState(row, status) {
+            let prioritySelect = row.find('.priority-select');
+
+            if (status === "Rejected" || status === "Withdrawn") {
+                prioritySelect.prop('disabled', true);
+            }
+            else {
+                prioritySelect.prop('disabled', false);
+            }
+        }
+
+        // ---------------- APPLY COLORS ON LOAD ----------------
+        $('.status-select').each(function () {
+            updateStatusColor(this);
+
+            let row = $(this).closest('tr');
+            let status = $(this).val();
+
+            updatePriorityState(row, status);
+        });
+
+        $('.priority-select').each(function () {
+            updatePriorityColor(this);
+        });
+
+        // ---------------- UPDATE TOP STATS ----------------
+        function updateTopStats() {
+            let rows = table.rows({ search: 'applied' }).nodes();
+
+            let total = rows.length;
+            let interviews = 0;
+            let offers = 0;
+            let rejected = 0;
+
+            $(rows).each(function () {
+                let select = $(this).find('.status-select');
+
+                // Withdrawn rows don't have a status select
+                if (!select.length) return;
+
+                let status = select.val();
+
+                if (status === "Interview") interviews++;
+                else if (status === "Offer") offers++;
+                else if (status === "Rejected") rejected++;
+            });
+
+            $('#total-count').text(total);
+            $('#interview-count').text(interviews);
+            $('#offer-count').text(offers);
+            $('#rejected-count').text(rejected);
+        }
+
+        // ---------------- STATUS UPDATE ----------------
+        $('.status-select').on('change', function () {
+            let select = this;
+            let appId = $(this).data('id');
+            let newStatus = $(this).val();
+
+            updateStatusColor(select);
+
+            $.ajax({
+                url: '/ajax-update-status/' + appId,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    status: newStatus
+                }),
+
+                success: function (response) {
+                    let row = $(select).closest('tr');
+
+                    row.find('.followup-cell').text(response.followup);
+                    row.find('.daysleft-cell').html(response.days_left);
+
+                    // Enable/disable priority based on new status
+                    updatePriorityState(row, newStatus);
+
+                    updateTopStats();
+                },
+
+                error: function () {
+                    alert("Failed to update status.");
+                }
+            });
+        });
+
+        // ---------------- PRIORITY UPDATE ----------------
+        $('.priority-select').on('change', function () {
+            let select = this;
+            let appId = $(this).data('id');
+            let newPriority = $(this).val();
+
+            updatePriorityColor(select);
+
+            $.ajax({
+                url: '/ajax-update-priority/' + appId,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    priority: newPriority
+                }),
+
+                success: function () {
+                    console.log("Priority updated");
+                },
+
+                error: function () {
+                    alert("Failed to update priority.");
+                }
+            });
+        });
+
+        // ---------------- INITIAL LOAD ----------------
+        updateTopStats();
+
+    });
+</script>
+{% endblock %}

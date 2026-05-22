@@ -1,0 +1,446 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-container">
+
+        <!-- Left Side (Brand Message) -->
+        <div class="auth-info d-none d-lg-flex">
+            <div>
+                <div class="auth-badge auth-logo-badge">
+                    <span class="auth-logo-wrapper">
+                        <img
+                                src="{{ url_for('static', filename='images/sat_logo.png') }}"
+                                alt="Smart Application Tracker Logo"
+                                class="auth-logo"
+                        >
+                    </span>
+                    <span class="brand-text">Smart Application Tracker</span>
+                </div>
+                <h1 class="auth-title">
+                    Organize your job search with confidence.
+                </h1>
+
+                <p class="auth-description">
+                    Track applications, visualize analytics, manage your pipeline,
+                    and never miss a follow-up.
+                </p>
+
+                <ul class="auth-features">
+                    <li><i class="bi bi-check-circle-fill"></i> Track all applications in one place</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Analytics dashboard with insights</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Drag-and-drop application pipeline</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Automatic follow-up reminders</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Side (Register Card) -->
+        <div class="auth-form-wrapper">
+            <div class="auth-card">
+
+                <div class="auth-card-header">
+                    <h2>Create Account</h2>
+                    <p>
+                        Start tracking your applications in a clean and organized workspace.
+                    </p>
+                </div>
+
+                <!-- Google Register -->
+                <a href="{{ url_for('google_login') }}"
+                   class="btn btn-google w-100 mb-4">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                         alt="Google">
+                    Continue with Google
+                </a>
+
+                <div class="auth-divider">
+                    <span>or register with email</span>
+                </div>
+
+                <!-- Registration Form -->
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <!-- USERNAME -->
+                    <div class="mb-3">
+
+                        {{ form.username.label(class="form-label") }}
+
+                        {{ form.username(
+                        class="form-control auth-input",
+                        placeholder="Choose a username",
+                        autofocus=True,
+                        autocomplete="username"
+                        ) }}
+
+                        {% for error in form.username.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+                    <div class="mb-3">
+
+                        {{ form.email.label(class="form-label") }}
+
+                        {{ form.email(
+                        class="form-control auth-input",
+                        placeholder="Enter your email",
+                        autocomplete="email"
+                        ) }}
+
+                        {% for error in form.email.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+                    <div class="mb-3">
+
+                        {{ form.password.label(class="form-label auth-label") }}
+
+                        <div class="password-wrapper">
+
+                            {{ form.password(
+                            class="form-control auth-input password-input",
+                            placeholder="Create a secure password",
+                            id="password",
+                            autocomplete="new-password"
+                            ) }}
+
+                            <button
+                                    type="button"
+                                    class="password-toggle"
+                                    onclick="togglePassword('password', this)">
+
+                                <i class="bi bi-eye"></i>
+
+                            </button>
+
+                        </div>
+
+                        {% for error in form.password.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- CONFIRM PASSWORD -->
+                    <div class="mb-4">
+
+                        {{ form.confirm_password.label(class="form-label") }}
+
+                        <div class="password-wrapper">
+
+                            {{ form.confirm_password(
+                            class="form-control auth-input",
+                            placeholder="Confirm your password",
+                            id="confirm_password",
+                            autocomplete="new-password"
+                            ) }}
+
+                            <button
+                                    type="button"
+                                    class="password-toggle"
+                                    onclick="togglePassword('confirm_password', this)">
+
+                                <i class="bi bi-eye"></i>
+
+                            </button>
+
+                        </div>
+
+                        <small id="password-match-message"
+                               class="text-danger d-none mt-2">
+
+                            Passwords do not match.
+
+                        </small>
+
+                        {% for error in form.confirm_password.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- PASSWORD STRENGTH -->
+                    <div id="password-strength-container"
+                         class="password-strength-container d-none">
+
+                        <div class="strength-bar">
+                            <div id="strength-fill"></div>
+                        </div>
+
+                        <small id="strength-text"
+                               class="strength-text">
+
+                            Password strength
+
+                        </small>
+
+                        <ul class="password-rules mt-2">
+
+                            <li id="rule-length">
+                                At least 8 characters
+                            </li>
+
+                            <li id="rule-upper">
+                                One uppercase letter
+                            </li>
+
+                            <li id="rule-lower">
+                                One lowercase letter
+                            </li>
+
+                            <li id="rule-number">
+                                One number
+                            </li>
+
+                            <li id="rule-special">
+                                One special character
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+
+                    <!-- TERMS CHECKBOX -->
+                    <div class="form-check auth-checkbox mb-4">
+
+                        {{ form.agree_terms(
+                        class="form-check-input",
+                        required=True
+                        ) }}
+
+                        <label class="form-check-label"
+                               for="{{ form.agree_terms.id }}">
+
+                            I agree to the
+
+                            <a href="{{ url_for('terms') }}"
+                               target="_blank">
+
+                                Terms of Service
+
+                            </a>
+
+                            and
+
+                            <a href="{{ url_for('privacy') }}"
+                               target="_blank">
+
+                                Privacy Policy
+
+                            </a>
+
+                        </label>
+
+                        {% for error in form.agree_terms.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- SUBMIT BUTTON -->
+                    <button type="submit"
+                            id="register-btn"
+                            class="auth-submit-btn">
+
+                        <i class="bi bi-person-plus-fill me-2"></i>
+
+                        Create Account
+
+                    </button>
+
+                </form>
+
+                <div class="auth-footer">
+                    Already have an account?
+                    <a href="{{ url_for('login') }}">Sign in</a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function togglePassword(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector("i");
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.className = "bi bi-eye-slash";
+        } else {
+            input.type = "password";
+            icon.className = "bi bi-eye";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const passwordInput = document.getElementById("password");
+        const confirmInput = document.getElementById("confirm_password");
+        const termsCheckbox = document.getElementById("agree_terms");
+        const strengthContainer = document.getElementById("password-strength-container");
+        const submitButton = document.getElementById("register-btn");
+        const matchMessage = document.getElementById("password-match-message");
+
+        // Exit if required elements are missing
+        if (!passwordInput || !strengthContainer) return;
+
+        const fill = document.getElementById("strength-fill");
+        const text = document.getElementById("strength-text");
+
+        const ruleLength = document.getElementById("rule-length");
+        const ruleUpper = document.getElementById("rule-upper");
+        const ruleLower = document.getElementById("rule-lower");
+        const ruleNumber = document.getElementById("rule-number");
+        const ruleSpecial = document.getElementById("rule-special");
+
+        // Disable submit button initially
+        if (submitButton) {
+            submitButton.disabled = true;
+        }
+
+        // Show strength section on focus
+        passwordInput.addEventListener("focus", function () {
+            strengthContainer.classList.remove("d-none");
+        });
+
+        // Hide strength section if password field is empty
+        passwordInput.addEventListener("blur", function () {
+            if (passwordInput.value.trim() === "") {
+                strengthContainer.classList.add("d-none");
+
+                // Reset progress bar
+                fill.className = "";
+                fill.style.width = "0";
+                text.textContent = "Password strength";
+
+                // Reset checklist
+                [
+                    ruleLength,
+                    ruleUpper,
+                    ruleLower,
+                    ruleNumber,
+                    ruleSpecial
+                ].forEach(rule => rule.classList.remove("valid"));
+
+                // Hide password match message
+                if (matchMessage) {
+                    matchMessage.classList.add("d-none");
+                }
+
+                // Disable submit button
+                if (submitButton) {
+                    submitButton.disabled = true;
+                }
+            }
+        });
+
+        function validateForm() {
+            const password = passwordInput.value;
+            const confirmPassword = confirmInput ? confirmInput.value : "";
+            const termsAccepted = termsCheckbox ? termsCheckbox.checked : true;
+
+            // Password rules
+            const rules = {
+                length: password.length >= 8,
+                upper: /[A-Z]/.test(password),
+                lower: /[a-z]/.test(password),
+                number: /\d/.test(password),
+                special: /[^A-Za-z0-9]/.test(password)
+            };
+
+            const score = Object.values(rules).filter(Boolean).length;
+            const passwordStrong = score === 5;
+            const passwordsMatch =
+                confirmInput
+                    ? (password === confirmPassword && confirmPassword.length > 0)
+                    : true;
+
+            // Enable button only if:
+            // 1. Password is strong
+            // 2. Confirm password matches
+            // 3. Terms checkbox is checked
+            if (submitButton) {
+                submitButton.disabled = !(
+                    passwordStrong &&
+                    passwordsMatch &&
+                    termsAccepted
+                );
+            }
+
+            // Show/hide password match message
+            if (matchMessage && confirmInput) {
+                if (confirmPassword.length > 0 && !passwordsMatch) {
+                    matchMessage.classList.remove("d-none");
+                } else {
+                    matchMessage.classList.add("d-none");
+                }
+            }
+
+            // Update checklist
+            ruleLength.classList.toggle("valid", rules.length);
+            ruleUpper.classList.toggle("valid", rules.upper);
+            ruleLower.classList.toggle("valid", rules.lower);
+            ruleNumber.classList.toggle("valid", rules.number);
+            ruleSpecial.classList.toggle("valid", rules.special);
+
+            // Strength meter
+            const labels = ["Very Weak", "Weak", "Fair", "Good", "Strong"];
+            const widths = ["20%", "40%", "60%", "80%", "100%"];
+            const classes = ["very-weak", "weak", "fair", "good", "strong"];
+
+            fill.className = "";
+
+            // Empty password state
+            if (password.length === 0) {
+                fill.style.width = "0";
+                text.textContent = "Password strength";
+                return;
+            }
+
+            const index = Math.max(score - 1, 0);
+
+            fill.style.width = widths[index];
+            fill.classList.add(classes[index]);
+            text.textContent = labels[index];
+        }
+
+        // Event listeners
+        passwordInput.addEventListener("input", validateForm);
+
+        if (confirmInput) {
+            confirmInput.addEventListener("input", validateForm);
+        }
+
+        if (termsCheckbox) {
+            termsCheckbox.addEventListener("change", validateForm);
+        }
+    });
+</script>
+{% endblock %}

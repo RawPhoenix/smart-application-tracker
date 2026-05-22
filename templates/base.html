@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Smart Application Tracker</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="icon"
+          type="image/png"
+          href="{{ url_for('static', filename='images/sat_logo.png') }}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
+          rel="stylesheet">
+
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/styles.css',v='5') }}">
+
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg custom-navbar">
+
+    <div class="container-xl">
+
+        <!-- LOGO -->
+        <a class="navbar-brand d-flex align-items-center"
+           href="{{ url_for('home') }}">
+
+            <img src="{{ url_for('static', filename='images/sat_logo.png') }}"
+                 alt="SAT Logo"
+                 class="navbar-logo">
+
+            <span class="brand-text">Smart Application Tracker</span>
+        </a>
+        <!-- MOBILE TOGGLER -->
+        <button class="navbar-toggler border-0 shadow-none"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+
+            <i class="bi bi-list text-light fs-2"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            {% if current_user.is_authenticated %}
+
+            <!-- CENTER NAV -->
+            <ul class="navbar-nav mx-auto nav-pill-group">
+
+                <li class="nav-item">
+                    <a class="nav-link nav-pill {% if request.endpoint == 'home' %}active{% endif %}"
+                       href="{{ url_for('home') }}">
+                        Dashboard
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link nav-pill {% if request.endpoint == 'analytics' %}active{% endif %}"
+                       href="{{ url_for('analytics') }}">
+                        Analytics
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link nav-pill {% if request.endpoint == 'pipeline' %}active{% endif %}"
+                       href="{{ url_for('pipeline') }}">
+                        Pipeline
+                    </a>
+                </li>
+
+
+            </ul>
+
+            <!-- RIGHT SECTION -->
+            <div class="d-flex align-items-center gap-3">
+
+                <!-- ADD BUTTON -->
+                <a href="{{ url_for('add') }}"
+                   class="btn add-btn">
+
+                    <i class="bi bi-plus-lg"></i>
+                    New
+                </a>
+
+                <!-- USER -->
+                <div class="dropdown">
+
+                    <button class="user-btn dropdown-toggle"
+                            data-bs-toggle="dropdown">
+
+                        <i class="bi bi-person-circle"></i>
+                        {{ current_user.username }}
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end">
+
+                        <li>
+                            <a class="dropdown-item"
+                               href="{{ url_for('archived') }}">
+
+                                <i class="bi bi-archive me-2"></i>
+                                Archive
+                            </a>
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item logout-item"
+                               href="#"
+                               data-bs-toggle="modal"
+                               data-bs-target="#logoutModal">
+
+                                <i class="bi bi-box-arrow-right me-2"></i>
+                                Logout
+
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+            {% else %}
+
+            <!-- NOT LOGGED IN -->
+            <div class="ms-auto d-flex align-items-center gap-3">
+
+                <a href="{{ url_for('login') }}"
+                   class="nav-link nav-pill {% if request.endpoint == 'login' %}active{% endif %}">
+                    Login
+                </a>
+
+                <a href="{{ url_for('register') }}"
+                   class="btn add-btn">
+                    Register
+                </a>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+</nav>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-warning alert-dismissible fade show flash-alert" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<main class="main-content">
+
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+
+</main>
+
+<div class="modal fade"
+     id="logoutModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content custom-modal">
+
+            <div class="modal-body p-4">
+
+                <h5 class="mb-2">Logout?</h5>
+
+                <p class="text-muted mb-4">
+                    Are you sure you want to logout?
+                </p>
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <button type="button"
+                            class="btn btn-light"
+                            data-bs-dismiss="modal">
+
+                        Cancel
+                    </button>
+
+                    <a href="{{ url_for('logout') }}"
+                       class="btn btn-danger">
+
+                        Logout
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<footer class="app-footer mt-5">
+    <div class="dashboard-container">
+        <div class="footer-grid">
+
+            <!-- Brand -->
+            <div class="footer-brand-block">
+                <div class="footer-brand">
+                    <img src="{{ url_for('static', filename='images/sat_logo.png') }}"
+                         alt="SAT Logo"
+                         class="footer-logo">
+                    <span class="footer-brand-text">Smart Application Tracker</span>
+                </div>
+
+                <p class="footer-tagline mb-0">
+                    Track all your opportunities.
+                </p>
+            </div>
+
+            <!-- Navigation -->
+            <div class="footer-column">
+                <h6 class="footer-heading">Navigation</h6>
+                <a href="{{ url_for('home') }}">Dashboard</a>
+                <a href="{{ url_for('analytics') }}">Analytics</a>
+                <a href="{{ url_for('pipeline') }}">Pipeline</a>
+                <a href="{{ url_for('archived') }}">Archive</a>
+            </div>
+
+            <!-- Connect -->
+            <div class="footer-column">
+                <h6 class="footer-heading">Connect</h6>
+                <a href="https://github.com/RawPhoenix" target="_blank" class="footer-link github-link"
+                   rel="noopener noreferrer">
+                    <i class="bi bi-github me-1"></i> GitHub
+                </a>
+                <a href="https://www.linkedin.com/in/jithesh-shetty41/" class="footer-link linkedin-link"
+                   target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-linkedin me-1"></i> LinkedIn
+                </a>
+                <a href="https://yourportfolio.com" target="_blank" class="footer-link portfolio-link"
+                   rel="noopener noreferrer">
+                    <i class="bi bi-globe me-1"></i> Portfolio
+                </a>
+            </div>
+
+            <!-- Legal -->
+            <div class="footer-column">
+                <h6 class="footer-heading">Legal</h6>
+                <a href="{{ url_for('privacy') }}" class="legal-link">Privacy Policy</a>
+                <a href="{{ url_for('terms') }}" class="legal-link">Terms of Service</a>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            © {{ current_year }} Smart Application Tracker. Designed and developed by <strong>Jithesh</strong>.
+        </div>
+    </div>
+</footer>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(el) {
+            new bootstrap.Tooltip(el, {
+                delay: { show: 300, hide: 100 }
+            });
+        });
+
+        setTimeout(function () {
+
+            document.querySelectorAll('.flash-alert').forEach(function(alert){
+
+                alert.classList.remove('show');
+
+                setTimeout(() => alert.remove(), 300);
+
+            });
+
+        }, 4000);
+
+    });
+</script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

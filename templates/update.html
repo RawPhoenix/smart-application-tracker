@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="form-card card shadow-sm border-0">
+    <div class="card-body p-4 p-lg-5">
+
+        <!-- Page Header -->
+        <div class="page-header mb-4">
+            <h1 class="page-title mb-2">Edit Application</h1>
+            <p class="page-subtitle mb-0">
+                Update and manage your application information.
+            </p>
+        </div>
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <!-- Application Info -->
+            <div class="form-section">
+                <h5 class="form-section-title">
+                    <i class="bi bi-info-circle"></i>
+                    Application Info
+                </h5>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.status.label(class="form-label") }}
+                        {{ form.status(class="form-select status-select") }}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        {{ form.priority.label(class="form-label") }}
+                        {{ form.priority(class="form-select priority-select") }}
+                    </div>
+
+                    <div class="col-md-6 mb-3" id="followup-wrapper">
+                        {{ form.follow_up_date.label(class="form-label") }}
+                        {{ form.follow_up_date(class="form-control") }}
+                        <div class="form-text">
+                            Used for reminders on active applications.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Work Details -->
+            <div class="form-section">
+                <h5 class="form-section-title">
+                    <i class="bi bi-briefcase"></i>
+                    Work Details
+                </h5>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.work_type.label(class="form-label") }}
+                        {{ form.work_type(class="form-select", id="work_type") }}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        {{ form.location.label(class="form-label") }}
+                        {{ form.location(class="form-control", id="location") }}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        {{ form.office_address.label(class="form-label") }}
+                        {{ form.office_address(class="form-control") }}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        {{ form.maps_link.label(class="form-label") }}
+                        {{ form.maps_link(class="form-control",
+                        placeholder="https://maps.google.com/...") }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Links & Notes -->
+            <div class="form-section">
+                <h5 class="form-section-title">
+                    <i class="bi bi-link-45deg"></i>
+                    Links & Notes
+                </h5>
+
+                <div class="mb-3">
+                    {{ form.application_link.label(class="form-label") }}
+                    {{ form.application_link(class="form-control",
+                    placeholder="https://company.com/job-posting") }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.notes.label(class="form-label") }}
+                    {{ form.notes(class="form-control notes-textarea",
+                    rows="5",
+                    placeholder="Add recruiter notes, interview feedback, or important reminders...") }}
+                </div>
+            </div>
+
+            <!-- Compensation -->
+            <div class="form-section">
+                <h5 class="form-section-title">
+                    <i class="bi bi-cash-stack"></i>
+                    Compensation
+                </h5>
+
+                <div class="mb-3">
+                    {{ form.salary.label(class="form-label") }}
+                    {{ form.salary(class="form-control",
+                    placeholder="e.g. ₹30 LPA") }}
+                </div>
+            </div>
+
+            <!-- Contact -->
+            <div class="form-section">
+                <h5 class="form-section-title">
+                    <i class="bi bi-person-lines-fill"></i>
+                    Contact
+                </h5>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.contact_name.label(class="form-label") }}
+                        {{ form.contact_name(class="form-control") }}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        {{ form.contact_email.label(class="form-label") }}
+                        {{ form.contact_email(class="form-control") }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="form-actions mt-4 pt-3 border-top d-flex gap-2 flex-wrap">
+                <button type="submit" class="btn page-add-btn">
+                    Save Changes
+                </button>
+
+                <a href="{{ request.referrer or url_for('home') }}"
+                   class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+
+        function updatePriorityColor(select) {
+
+            $(select).removeClass(
+                'priority-high priority-medium priority-low'
+            );
+
+            let val = $(select).val();
+
+            if (val === "High") {
+                $(select).addClass('priority-high');
+            }
+            else if (val === "Medium") {
+                $(select).addClass('priority-medium');
+            }
+            else {
+                $(select).addClass('priority-low');
+            }
+        }
+
+        function updateStatusColor(select) {
+
+            $(select).removeClass(
+                'status-applied status-interview status-offer status-rejected status-withdrawn'
+            );
+
+            let val = $(select).val();
+
+            if (val === "Applied") {
+                $(select).addClass('status-applied');
+            }
+            else if (val === "Interview") {
+                $(select).addClass('status-interview');
+            }
+            else if (val === "Offer") {
+                $(select).addClass('status-offer');
+            }
+            else if (val === "Rejected") {
+                $(select).addClass('status-rejected');
+            }
+            else if (val === "Withdrawn") {
+                $(select).addClass('status-withdrawn');
+            }
+        }
+
+        function toggleFollowup() {
+
+            let val = $('.status-select').val();
+
+            if (
+                val === "Offer" ||
+                val === "Rejected" ||
+                val === "Withdrawn"
+            ) {
+                $('#followup-wrapper').hide();
+            }
+            else {
+                $('#followup-wrapper').show();
+            }
+        }
+
+        function workTypeLogic() {
+
+            let val = $('#work_type').val();
+
+            if (val === "Remote") {
+                $('#location').prop('required', false);
+            }
+            else if (val === "On-site" || val === "Hybrid") {
+                $('#location').prop('required', true);
+            }
+            else {
+                $('#location').prop('required', false);
+            }
+        }
+
+        updatePriorityColor($('.priority-select'));
+        updateStatusColor($('.status-select'));
+        toggleFollowup();
+        workTypeLogic();
+
+        $('.priority-select').change(function () {
+            updatePriorityColor(this);
+        });
+
+        $('.status-select').change(function () {
+            updateStatusColor(this);
+            toggleFollowup();
+        });
+
+        $('#work_type').change(function () {
+            workTypeLogic();
+        });
+
+    });
+</script>
+{% endblock %}

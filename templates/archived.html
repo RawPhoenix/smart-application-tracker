@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <h1 class="page-title">Archived Applications</h1>
+    <p class="page-subtitle mb-0">
+        Review applications that are no longer active and reopen them when needed.
+    </p>
+</div>
+
+<!-- Archive Table Card -->
+<div class="card table-card shadow-sm border-0 archive-card">
+    <div class="card-body">
+
+        <!-- Top Bar -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-3 gap-2">
+
+            <!-- Filter Pills -->
+            <div class="d-flex gap-2 flex-wrap">
+
+                <a href="{{ url_for('archived') }}"
+                   class="btn btn-sm {{ 'btn-dark' if not current_filter else 'btn-outline-dark' }}">
+                    All
+                </a>
+
+                <a href="{{ url_for('archived', status='Applied') }}"
+                   class="btn btn-sm {{ 'btn-primary' if current_filter == 'Applied' else 'btn-outline-primary' }}">
+                    Applied
+                </a>
+
+                <a href="{{ url_for('archived', status='Interview') }}"
+                   class="btn btn-sm {{ 'btn-warning' if current_filter == 'Interview' else 'btn-outline-warning' }}">
+                    Interview
+                </a>
+
+                <a href="{{ url_for('archived', status='Offer') }}"
+                   class="btn btn-sm {{ 'btn-success' if current_filter == 'Offer' else 'btn-outline-success' }}">
+                    Offer
+                </a>
+
+                <a href="{{ url_for('archived', status='Rejected') }}"
+                   class="btn btn-sm {{ 'btn-danger' if current_filter == 'Rejected' else 'btn-outline-danger' }}">
+                    Rejected
+                </a>
+
+                <a href="{{ url_for('archived', status='Withdrawn') }}"
+                   class="btn btn-sm {{ 'btn-secondary' if current_filter == 'Withdrawn' else 'btn-outline-secondary' }}">
+                    Withdrawn
+                </a>
+
+            </div>
+
+            <!-- Search -->
+            <div id="archiveSearchBox"></div>
+
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table id="archivedTable" class="table table-hover align-middle">
+
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Company</th>
+                    <th>Role</th>
+                    <th>Type</th>
+                    <th class="text-nowrap">Work Type</th>
+                    <th>Location</th>
+                    <th>Final Status</th>
+                    <th class="text-nowrap">Date Applied</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for app in applications %}
+                <tr>
+                    <td>{{ app.application_id }}</td>
+
+                    <td class="company-cell">
+                        {{ app.company_name }}
+                    </td>
+
+                    <td class="text-nowrap role-cell">
+                        {{ app.role }}
+                    </td>
+
+                    <td>
+                            <span class="badge rounded-pill text-dark border">
+                                {{ app.application_type }}
+                            </span>
+                    </td>
+
+                    <td>
+                            <span class="badge rounded-pill text-dark border">
+                                {{ app.work_type }}
+                            </span>
+                    </td>
+
+                    <td>{{ app.location }}</td>
+
+                    <td>
+                        {% if app.status == "Applied" %}
+                        <span class="badge bg-primary">Applied</span>
+                        {% elif app.status == "Interview" %}
+                        <span class="badge bg-warning text-dark">Interview</span>
+                        {% elif app.status == "Offer" %}
+                        <span class="badge bg-success">Offer</span>
+                        {% elif app.status == "Rejected" %}
+                        <span class="badge bg-danger">Rejected</span>
+                        {% elif app.status == "Withdrawn" %}
+                        <span class="badge bg-secondary">Withdrawn</span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ app.date_applied.strftime('%d %b %Y') }}</td>
+
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-2">
+
+                            <a href="{{ url_for('application_details', id=app.application_id) }}"
+                               class="btn btn-sm btn-outline-secondary">
+                                Details
+                            </a>
+
+                            <a href="{{ url_for('restore', application_id=app.application_id) }}"
+                               class="btn btn-sm btn-success">
+                                Reopen
+                            </a>
+
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+
+        $('#archivedTable').DataTable({
+            pageLength: 5,
+            lengthChange: false,
+            ordering: true,
+            searching: true,
+            info: true,
+            autoWidth: false,
+            scrollX: true,
+
+            language: {
+                emptyTable: "No archived applications yet.",
+                zeroRecords: "No matching archived applications found."
+            },
+
+            dom:
+                'f' +
+                'rt' +
+                '<"table-footer d-flex align-items-center mt-3"ip>'
+        });
+
+        $('.dataTables_filter').appendTo('#archiveSearchBox');
+
+        $('.dataTables_filter input')
+            .attr('placeholder', 'Search archived...')
+            .addClass('form-control form-control-sm');
+    });
+</script>
+{% endblock %}

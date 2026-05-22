@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-container">
+
+        <!-- Left Side (Brand Message) -->
+        <div class="auth-info d-none d-lg-flex">
+            <div>
+                <div class="auth-badge auth-logo-badge">
+                    <span class="auth-logo-wrapper">
+                        <img
+                                src="{{ url_for('static', filename='images/sat_logo.png') }}"
+                                alt="Smart Application Tracker Logo"
+                                class="auth-logo"
+                        >
+                    </span>
+                    <span class="brand-text">Smart Application Tracker</span>
+                </div>
+
+                <h1 class="auth-title">
+                    Welcome back.
+                </h1>
+
+                <p class="auth-description">
+                    Continue tracking your applications, monitoring your pipeline,
+                    and staying on top of every opportunity.
+                </p>
+
+                <ul class="auth-features">
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        Dashboard with real-time insights
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        Track interviews, offers, and rejections
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        Drag-and-drop pipeline management
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        Never miss a follow-up reminder
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Side (Login Card) -->
+        <div class="auth-form-wrapper">
+            <div class="auth-card">
+
+                <!-- Card Header -->
+                <div class="auth-card-header">
+                    <h2>Sign In</h2>
+                    <p>
+                        Access your dashboard and continue where you left off.
+                    </p>
+                </div>
+
+                <!-- Google Login -->
+                <a href="{{ url_for('google_login') }}"
+                   class="btn btn-google w-100 mb-4">
+                    <img
+                            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                            alt="Google"
+                    >
+                    Continue with Google
+                </a>
+
+                <!-- Divider -->
+                <div class="auth-divider">
+                    <span>or sign in with email</span>
+                </div>
+
+                <!-- Login Form -->
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label") }}
+                        {{ form.email(
+                        class="form-control auth-input",
+                        placeholder="Enter your email"
+                        ) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.password.label(class="form-label auth-label") }}
+
+                        <div class="password-wrapper">
+                            {{ form.password(
+                            class="form-control auth-input password-input",
+                            placeholder="Enter your password",
+                            id="password"
+                            ) }}
+
+                            <button
+                                    type="button"
+                                    class="password-toggle"
+                                    onclick="togglePassword('password', this)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="auth-options-row mb-4">
+                        <div class="form-check">
+                            {{ form.remember(class="form-check-input") }}
+                            {{ form.remember.label(class="form-check-label") }}
+                        </div>
+
+                        <a href="{{ url_for('forgot_password') }}" class="auth-link-small">
+                            Forgot password?
+                        </a>
+                    </div>
+
+                    <button type="submit"
+                            class="btn btn-auth-primary w-100">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                        Sign In
+                    </button>
+                </form>
+
+                <!-- Footer -->
+                <div class="auth-footer">
+                    Don’t have an account?
+                    <a href="{{ url_for('register') }}">Create one</a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function togglePassword(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector("i");
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.className = "bi bi-eye-slash";
+        } else {
+            input.type = "password";
+            icon.className = "bi bi-eye";
+        }
+    }
+</script>
+{% endblock %}

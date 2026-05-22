@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if active_total == 0 %}
+
+<div class="card shadow-sm p-5 text-center mb-4">
+    <h3>No active applications yet</h3>
+
+    <p class="text-muted mb-3">
+        Analytics shows active applications only.
+        Historical activity is shown below.
+    </p>
+
+    <div class="text-center mt-3">
+        <a href="{{ url_for('add') }}"
+           class="btn btn-success px-5">
+            + Add Application
+        </a>
+    </div>
+</div>
+
+{% else %}
+
+<!-- Page Header -->
+<div class="page-header">
+    <h1 class="page-title">Analytics</h1>
+    <p class="page-subtitle">
+        Gain insights into your job application performance.
+    </p>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-3 analytics-summary mb-4">
+
+    <div class="col-md-2">
+        <div class="card stat-card text-center h-100">
+            <div class="card-body">
+                <i class="bi bi-briefcase stat-icon text-primary"></i>
+                <h6 class="stat-label">Active</h6>
+                <h3 class="stat-value text-primary">{{ active_total }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card stat-card text-center h-100">
+            <div class="card-body">
+                <i class="bi bi-person-video3 stat-icon text-warning"></i>
+                <h6 class="stat-label">Interview Rate</h6>
+                <h3 class="stat-value text-warning">{{ interview_rate }}%</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card stat-card text-center h-100">
+            <div class="card-body">
+                <i class="bi bi-trophy stat-icon text-success"></i>
+                <h6 class="stat-label">Offer Rate</h6>
+                <h3 class="stat-value text-success">{{ offer_rate }}%</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card stat-card text-center h-100">
+            <div class="card-body">
+                <i class="bi bi-reply stat-icon text-info"></i>
+                <h6 class="stat-label">Response Rate</h6>
+                <h3 class="stat-value text-info">{{ response_rate }}%</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card stat-card text-center h-100">
+            <div class="card-body">
+                <i class="bi bi-hourglass-split stat-icon text-secondary"></i>
+                <h6 class="stat-label">Pending</h6>
+                <h3 class="stat-value text-secondary">{{ pending_total }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card stat-card text-center h-100">
+            <div class="card-body">
+                <i class="bi bi-calendar3 stat-icon text-dark"></i>
+                <h6 class="stat-label">Avg Age</h6>
+                <h3 class="stat-value text-dark">{{ avg_days_open }}d</h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Charts Row 1 -->
+<div class="row g-4 mb-4">
+
+    <div class="col-md-6">
+        <div class="card chart-card h-100">
+            <div class="card-body">
+                <h6 class="chart-title">Applications by Status</h6>
+                <div style="height:320px">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card chart-card h-100">
+            <div class="card-body">
+                <h6 class="chart-title">Applications by Platform</h6>
+
+                {% if platform_labels %}
+                <div style="height:320px">
+                    <canvas id="platformChart"></canvas>
+                </div>
+                {% else %}
+                <div class="text-center text-muted mt-5">
+                    No platform data available
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Charts Row 2 -->
+<div class="row g-4 mb-4">
+
+    <div class="col-md-6">
+        <div class="card chart-card h-100">
+            <div class="card-body">
+                <h6 class="chart-title">Applications by Work Type</h6>
+                <div style="height:320px">
+                    <canvas id="workTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card chart-card h-100">
+            <div class="card-body">
+                <h6 class="chart-title">Applications by Type</h6>
+                <div style="height:320px">
+                    <canvas id="appTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endif %}
+
+<!-- Timeline Always Visible -->
+<div class="card chart-card mt-4">
+    <div class="card-body">
+        <h6 class="chart-title">Applications Over Time</h6>
+
+        <div style="height:320px">
+            <canvas id="timelineChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+    function makeDoughnut(id, labels, data, colors) {
+        const ctx = document.getElementById(id);
+        if (!ctx) return;
+
+        /* Count only values greater than 0 */
+        const nonZeroCount = data.filter(value => value > 0).length;
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors,
+                    borderColor: '#ffffff',
+                    borderWidth: nonZeroCount === 1 ? 0 : 2,
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '68%',
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 14,
+                            boxHeight: 14,
+                            padding: 12,
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        padding: 10,
+                        cornerRadius: 8
+                    }
+                }
+            }
+        });
+    }
+
+    /* Applications by Status */
+    makeDoughnut(
+        "statusChart",
+        ['Applied', 'Interview', 'Offer', 'Rejected', 'Withdrawn'],
+        [
+            {{ applied }},
+            {{ interviews }},
+            {{ offers }},
+            {{ rejected }},
+            {{ withdrawn }}
+        ],
+        ['#0d6efd', '#ffc107', '#198754', '#dc3545', '#6c757d']
+    );
+
+    /* Applications by Platform */
+    makeDoughnut(
+        "platformChart",
+        {{ platform_labels|tojson }},
+        {{ platform_counts|tojson }},
+        ['#6f42c1', '#20c997', '#fd7e14', '#0dcaf0', '#6610f2']
+    );
+
+    /* Applications by Work Type */
+    makeDoughnut(
+        "workTypeChart",
+        {{ work_labels|tojson }},
+        {{ work_counts|tojson }},
+        ['#198754', '#0dcaf0', '#6f42c1', '#adb5bd']
+    );
+
+    /* Applications by Type */
+    makeDoughnut(
+        "appTypeChart",
+        {{ type_labels|tojson }},
+        {{ type_counts|tojson }},
+        ['#fd7e14', '#20c997', '#6f42c1', '#0dcaf0', '#adb5bd']
+    );
+
+    /* Timeline Chart */
+    const timeline = document.getElementById("timelineChart");
+
+    if (timeline) {
+        new Chart(timeline, {
+            type: 'line',
+            data: {
+                labels: {{ months|tojson }},
+                datasets: [{
+                    label: 'Applications',
+                    data: {{ counts|tojson }},
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.08)',
+                    fill: true,
+                    tension: 0.35,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#0d6efd'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        padding: 10,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        },
+                        grid: {
+                            color: 'rgba(148, 163, 184, 0.15)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(148, 163, 184, 0.08)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    });
+</script>
+
+{% endblock %}
