@@ -365,8 +365,7 @@
                                 </a>
 
                                 <a href="{{ url_for('withdraw', application_id=app.application_id) }}"
-                                   class="btn  action-b
-                       tn withdraw-btn">
+                                   class="btn  action-btn withdraw-btn">
                                     Withdraw
                                 </a>
 
@@ -407,6 +406,7 @@
             info: true,
             autoWidth: false,
             scrollX: true,
+            responsive: true,
 
             language: {
                 emptyTable: "No applications yet. Add your first job application.",
@@ -416,16 +416,18 @@
             dom:
                 'f' +
                 'rt' +
-                '<"table-footer d-flex align-items-center mt-3"ip>'
+                '<"table-footer"ip>'
         });
 
-        // Move Search Box
+        // ---------------- MOVE SEARCH BOX ----------------
         $('.dataTables_filter').appendTo('#searchBox');
+
         $('.dataTables_filter input')
             .attr('placeholder', 'Search company, role...');
 
         // ---------------- STATUS COLOR ----------------
         function updateStatusColor(select) {
+
             $(select).removeClass(
                 'status-applied status-interview status-offer status-rejected status-withdrawn'
             );
@@ -435,15 +437,19 @@
             if (val === "Applied") {
                 $(select).addClass('status-applied');
             }
+
             else if (val === "Interview") {
                 $(select).addClass('status-interview');
             }
+
             else if (val === "Offer") {
                 $(select).addClass('status-offer');
             }
+
             else if (val === "Rejected") {
                 $(select).addClass('status-rejected');
             }
+
             else {
                 $(select).addClass('status-withdrawn');
             }
@@ -456,6 +462,7 @@
 
         // ---------------- PRIORITY COLOR ----------------
         function updatePriorityColor(select) {
+
             $(select).removeClass(
                 'priority-high priority-medium priority-low'
             );
@@ -465,9 +472,11 @@
             if (val === "High") {
                 $(select).addClass('priority-high');
             }
+
             else if (val === "Medium") {
                 $(select).addClass('priority-medium');
             }
+
             else {
                 $(select).addClass('priority-low');
             }
@@ -480,33 +489,45 @@
 
         // ---------------- ENABLE / DISABLE PRIORITY ----------------
         function updatePriorityState(row, status) {
+
             let prioritySelect = row.find('.priority-select');
 
-            if (status === "Rejected" || status === "Withdrawn") {
+            if (
+                status === "Rejected" ||
+                status === "Withdrawn"
+            ) {
                 prioritySelect.prop('disabled', true);
             }
+
             else {
                 prioritySelect.prop('disabled', false);
             }
         }
 
-        // ---------------- APPLY COLORS ON LOAD ----------------
-        $('.status-select').each(function () {
-            updateStatusColor(this);
+        // ---------------- APPLY ALL UI STYLES ----------------
+        function applyUIStyles() {
 
-            let row = $(this).closest('tr');
-            let status = $(this).val();
+            $('.status-select').each(function () {
 
-            updatePriorityState(row, status);
-        });
+                updateStatusColor(this);
 
-        $('.priority-select').each(function () {
-            updatePriorityColor(this);
-        });
+                let row = $(this).closest('tr');
+                let status = $(this).val();
+
+                updatePriorityState(row, status);
+            });
+
+            $('.priority-select').each(function () {
+                updatePriorityColor(this);
+            });
+        }
 
         // ---------------- UPDATE TOP STATS ----------------
         function updateTopStats() {
-            let rows = table.rows({ search: 'applied' }).nodes();
+
+            let rows = table.rows({
+                search: 'applied'
+            }).nodes();
 
             let total = rows.length;
             let interviews = 0;
@@ -514,16 +535,25 @@
             let rejected = 0;
 
             $(rows).each(function () {
+
                 let select = $(this).find('.status-select');
 
-                // Withdrawn rows don't have a status select
+                // Withdrawn rows may not contain dropdown
                 if (!select.length) return;
 
                 let status = select.val();
 
-                if (status === "Interview") interviews++;
-                else if (status === "Offer") offers++;
-                else if (status === "Rejected") rejected++;
+                if (status === "Interview") {
+                    interviews++;
+                }
+
+                else if (status === "Offer") {
+                    offers++;
+                }
+
+                else if (status === "Rejected") {
+                    rejected++;
+                }
             });
 
             $('#total-count').text(total);
@@ -533,8 +563,10 @@
         }
 
         // ---------------- STATUS UPDATE ----------------
-        $('.status-select').on('change', function () {
+        $(document).on('change', '.status-select', function () {
+
             let select = this;
+
             let appId = $(this).data('id');
             let newStatus = $(this).val();
 
@@ -544,19 +576,28 @@
                 url: '/ajax-update-status/' + appId,
                 type: 'POST',
                 contentType: 'application/json',
+
                 data: JSON.stringify({
                     status: newStatus
                 }),
 
                 success: function (response) {
+
                     let row = $(select).closest('tr');
 
-                    row.find('.followup-cell').text(response.followup);
-                    row.find('.daysleft-cell').html(response.days_left);
+                    row.find('.followup-cell')
+                        .text(response.followup);
 
-                    // Enable/disable priority based on new status
+                    row.find('.daysleft-cell')
+                        .html(response.days_left);
+
+                    // Update priority state
                     updatePriorityState(row, newStatus);
 
+                    // Reapply styles
+                    applyUIStyles();
+
+                    // Refresh stats
                     updateTopStats();
                 },
 
@@ -567,8 +608,10 @@
         });
 
         // ---------------- PRIORITY UPDATE ----------------
-        $('.priority-select').on('change', function () {
+        $(document).on('change', '.priority-select', function () {
+
             let select = this;
+
             let appId = $(this).data('id');
             let newPriority = $(this).val();
 
@@ -578,11 +621,16 @@
                 url: '/ajax-update-priority/' + appId,
                 type: 'POST',
                 contentType: 'application/json',
+
                 data: JSON.stringify({
                     priority: newPriority
                 }),
 
                 success: function () {
+
+                    // Reapply styles
+                    applyUIStyles();
+
                     console.log("Priority updated");
                 },
 
@@ -593,7 +641,17 @@
         });
 
         // ---------------- INITIAL LOAD ----------------
+        applyUIStyles();
+
         updateTopStats();
+
+        // ---------------- DATATABLE REDRAW FIX ----------------
+        table.on('draw', function () {
+
+            applyUIStyles();
+
+            updateTopStats();
+        });
 
     });
 </script>
