@@ -175,10 +175,11 @@ smart-application-tracker/
 * Python
 * Flask
 * SQLAlchemy
-* Flask-WTF
+* Flask-WTF / WTForms
 * Flask-Login
 * Flask-Mail
 * Authlib (Google OAuth)
+* Jinja2
 
 ### Frontend
 
@@ -187,17 +188,24 @@ smart-application-tracker/
 * Bootstrap 5
 * JavaScript
 * jQuery
+* AJAX
 * DataTables
 * Chart.js
+* Choices.js
 
 ### Database
 
 * SQLite
+* SQLAlchemy ORM
 
 ### Authentication
 
-* Email & Password
-* Google OAuth
+* Email & Password Authentication
+* Google OAuth 2.0
+
+### Deployment
+
+* Ready for deployment on Render / Railway / PythonAnywhere
 
 ---
 
@@ -298,14 +306,15 @@ The interface is optimized for desktop and tablet devices while maintaining usab
 ## 🚀 Future Improvements
 
 * Resume upload and management
-* Resume parsing
-* PostgreSQL support
-* Interview scheduling calendar
-* Email reminders for follow-ups
-* Application export (CSV / PDF)
-* Company insights dashboard
-* AI-powered application recommendations
-
+* Resume parsing and automated skill extraction
+* AI-powered Resume–Job Description Matching System
+* Semantic similarity scoring using Transformer-based NLP models
+* Skill-gap analysis and personalized improvement suggestions
+* Job recommendation engine based on resume skills and application history
+* Interview scheduling and calendar integration
+* Email reminders for upcoming follow-ups and deadlines
+* Export applications and analytics reports as PDF/CSV
+* PostgreSQL migration and cloud-scale deployment
 ---
 
 ## 👨‍💻 Author
