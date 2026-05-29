@@ -163,6 +163,7 @@ smart-application-tracker/
 ├── extensions.py
 ├── utils.py
 ├── requirements.txt
+├── .gitignore
 └── README.md
 ```
 
