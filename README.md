@@ -138,7 +138,11 @@ smart-application-tracker/
 │
 ├── static/
 │   ├── css/
+│   │   └── styles.css
+│   │
 │   └── images/
+│       ├── favicon.png
+│       └── sat_logo.png
 │
 ├── templates/
 │   ├── login.html
@@ -148,6 +152,10 @@ smart-application-tracker/
 │   └── ...
 │
 ├── screenshots/
+│   ├── dashboard-overview.png
+│   ├── analytics-overview.png
+│   ├── application-details.png
+│   └── ...
 │
 ├── app.py
 ├── forms.py
