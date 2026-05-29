@@ -1,161 +1,317 @@
-# Smart Job Application Tracker (Python CLI)
+# Smart Application Tracker
 
-A command-line based job application tracking system built using Python.  
-This project helps users manage and track job applications efficiently with features such as status updates, filtering, and persistent storage.
+A modern web-based job application tracking platform built with Flask that helps users organize, monitor, and analyze
+their job search process.
 
----
-
-## 📌 Features
-
-- Add new job applications  
-- View all applications  
-- Update application status  
-- Withdraw applications (soft delete)  
-- Filter applications by status  
-- Persistent storage using CSV  
-- Clean and user-friendly CLI interface  
+Track applications across multiple platforms, manage interviews and follow-ups, visualize application trends through
+analytics dashboards, and streamline your entire job search workflow from one place.
 
 ---
 
-## 🧠 Project Motivation
+## 🚀 Features
 
-While applying for multiple jobs, keeping track of application statuses across platforms becomes difficult.  
-This project was built to simulate a real-world tracking system while demonstrating strong Python fundamentals and clean software design.
+### 🔐 Authentication & Security
+
+* Secure user registration and login
+* Google OAuth authentication
+* Password hashing and secure session management
+* Password reset via email
+* Terms & Conditions and Privacy Policy pages
+
+### 📋 Application Management
+
+* Add, edit, and manage job applications
+* Support for:
+
+  * Jobs
+  * Internships
+  * Contracts
+  * Freelance opportunities
+  * Programs
+* Track application status throughout the hiring process
+* Archive applications without permanent deletion
+* Store recruiter and contact information
+* Manage salary details, notes, office locations, and application links
+
+### 📊 Analytics Dashboard
+
+* Application status distribution
+* Platform-wise application tracking
+* Work type analytics
+* Application type analytics
+* Response rate tracking
+* Interview rate tracking
+* Offer rate tracking
+* Application timeline visualization
+
+### 🔄 Pipeline View
+
+* Kanban-style application pipeline
+* Drag-and-drop workflow visualization
+* Quickly identify application bottlenecks
+* Track progress from application to offer
+
+### 🔍 Productivity Features
+
+* Search and filter applications
+* Priority management (High / Medium / Low)
+* Follow-up date tracking
+* Days remaining calculations
+* Status-based application management
+* Responsive user interface
+
+---
+
+## 📸 Screenshots
+
+### Login Page
+
+![Login Page](screenshots/login-page.png)
+
+### Registration Page
+
+![Registration Page](screenshots/register-page.png)
+
+### Dashboard Overview
+
+![Dashboard](screenshots/dashboard-overview.png)
+
+### Analytics Dashboard
+
+![Analytics Overview](screenshots/analytics-overview.png)
+
+### Application Timeline Analytics
+
+![Analytics Timeline](screenshots/analytics-timeline.png)
+
+### Pipeline View
+
+![Pipeline](screenshots/pipeline-board.png)
+
+### Application Details
+
+![Application Details](screenshots/application-details.png)
 
 ---
 
 ## 🏗️ Project Architecture
 
-The application follows a layered architecture:
+The application follows a layered architecture for maintainability and scalability.
 
-CLI Layer → User interaction
-
-Service Layer → Business logic
-
-Model Layer → Data representation & validation
-
-Storage Layer → File persistence
-
-
-
----
-
-## 📁 Folder Structure
-
-     smart-job-application-tracker/
-     │
-     ├── cli/
-     │ └── menu.py
-     │
-     ├── models/
-     │ └── job_application.py
-     │
-     ├── services/
-     │ └── application_manager.py
-     │
-     ├── storage/
-     │ └── storage_handler.py
-     │
-     ├── data/
-     │ └── applications.csv
-     │
-     ├── main.py
-     ├── README.md
-     ├── requirements.txt
-     └── .gitignore
-
-
+```text
+Presentation Layer
+│
+├── HTML Templates
+├── CSS
+├── JavaScript
+│
+Business Logic Layer
+│
+├── Flask Routes
+├── Application Manager
+│
+Data Layer
+│
+├── SQLAlchemy Models
+├── SQLite Database
+│
+Authentication Layer
+│
+├── Flask-Login
+├── Google OAuth
+├── Email Authentication
+```
 
 ---
 
-## ⚙️ Technologies Used
+## 📁 Project Structure
 
-- Python 3  
-- Object-Oriented Programming (OOP)  
-- CSV file handling  
-- Exception handling  
-- Datetime module  
-- Command Line Interface (CLI)  
+```text
+smart-application-tracker/
+│
+├── models/
+│   ├── user.py
+│   └── job_application.py
+│
+├── services/
+│   └── application_manager.py
+│
+├── static/
+│   ├── css/
+│   └── images/
+│
+├── templates/
+│   ├── login.html
+│   ├── register.html
+│   ├── analytics.html
+│   ├── pipeline.html
+│   └── ...
+│
+├── screenshots/
+│
+├── app.py
+├── forms.py
+├── oauth.py
+├── extensions.py
+├── utils.py
+├── requirements.txt
+└── README.md
+```
 
 ---
 
-## ▶️ How to Run the Project
+## 🛠️ Tech Stack
 
-### 1️⃣ Clone the repository
+### Backend
 
-    git clone https://github.com/RawPhoenix/smart-job-application-tracker.git
+* Python
+* Flask
+* SQLAlchemy
+* Flask-WTF
+* Flask-Login
+* Flask-Mail
+* Authlib (Google OAuth)
 
-    cd smart-job-application-tracker
+### Frontend
 
-2️⃣ Run the application
+* HTML5
+* CSS3
+* Bootstrap 5
+* JavaScript
+* jQuery
+* DataTables
+* Chart.js
 
-    python main.py
+### Database
 
-> **Note:**  
-> The `applications.csv` file contains sample dummy data for demonstration purposes only.  
-> No real job application data is included.
+* SQLite
+
+### Authentication
+
+* Email & Password
+* Google OAuth
 
 ---
 
-## 🧪 Sample Menu
+## ⚙️ Installation
 
-    1. Add application
-    2. View all applications
-    3. Update application status
-    4. Withdraw application
-    5. Filter applications by status
-    6. Exit
+### Clone the Repository
+
+```bash
+git clone https://github.com/RawPhoenix/smart-application-tracker.git
+
+cd smart-application-tracker
+```
+
+### Create Virtual Environment
+
+```bash
+python -m venv venv
+```
+
+Activate it:
+
+**Windows**
+
+```bash
+venv\Scripts\activate
+```
+
+**Linux / macOS**
+
+```bash
+source venv/bin/activate
+```
+
+### Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Configure Environment Variables
+
+Create a `.env` file:
+
+```env
+SECRET_KEY=your_secret_key
+
+MAIL_USERNAME=your_email
+MAIL_PASSWORD=your_password
+
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+```
+
+### Run the Application
+
+```bash
+python app.py
+```
+
+Open:
+
+```text
+http://127.0.0.1:5000
+```
 
 ---
 
 ## 📊 Supported Application Statuses
 
-    Applied
-    Interview
-    Rejected
-    Offer
-    Withdrawn
-    Other
+* Applied
+* Interview
+* Offer
+* Rejected
+* Withdrawn
 
 ---
 
 ## 💡 Key Design Decisions
 
-* **Soft delete approach**
+### Archive Instead of Delete
 
-    Applications are never removed from storage; instead, their status is updated to Withdrawn.
+Applications are archived rather than permanently removed, reducing accidental data loss.
 
-* **CSV-based persistence**
+### User-Centric Analytics
 
-    Lightweight and readable storage format suitable for CLI applications.
+Analytics are calculated per user, providing personalized insights into application performance.
 
-* **Centralized validation**
+### Service Layer Separation
 
-    Validation logic is implemented in the domain model to avoid duplicated checks.
+Business logic is separated from route handling to improve maintainability and scalability.
 
-* **Clean separation of concerns**
+### Responsive Design
 
-    Each layer handles a single responsibility.
+The interface is optimized for desktop and tablet devices while maintaining usability across screen sizes.
 
 ---
 
 ## 🚀 Future Improvements
 
-* GUI version using Tkinter or PyQt
-* Web version using Flask or FastAPI
-* Resume parsing integration
-* Application analytics dashboard
-* ML-based job outcome prediction
+* Resume upload and management
+* Resume parsing
+* PostgreSQL support
+* Interview scheduling calendar
+* Email reminders for follow-ups
+* Application export (CSV / PDF)
+* Company insights dashboard
+* AI-powered application recommendations
 
 ---
 
 ## 👨‍💻 Author
-**Jithesh Shetty** \
+
+**Jithesh Shetty**
+
 B.Tech Computer Science Engineering (AI & ML)
+
+Passionate about building practical software solutions and exploring AI/ML technologies.
 
 ---
 
 ## ⭐ Feedback
-If you found this project useful, feel free to star the repository ⭐ \
-Suggestions and improvements are welcome.
 
+If you found this project useful, consider giving the repository a star ⭐
+
+Suggestions, improvements, and contributions are always welcome.
