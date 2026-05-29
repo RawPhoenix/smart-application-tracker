@@ -58,19 +58,25 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        {{ form.location.label(class="form-label") }}
+                        <label for="location" class="form-label">
+                            {{ form.location.label.text }}
+                        </label>
+
                         {{ form.location(class="form-control", id="location") }}
                     </div>
 
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-6 mb-3" id="office-address-group">
                         {{ form.office_address.label(class="form-label") }}
-                        {{ form.office_address(class="form-control") }}
+                        {{ form.office_address(class="form-control", id="office_address") }}
                     </div>
 
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-6 mb-3" id="maps-link-group">
                         {{ form.maps_link.label(class="form-label") }}
-                        {{ form.maps_link(class="form-control",
-                        placeholder="https://maps.google.com/...") }}
+                        {{ form.maps_link(
+                        class="form-control",
+                        id="maps_link",
+                        placeholder="https://maps.google.com/..."
+                        ) }}
                     </div>
                 </div>
             </div>
@@ -206,10 +212,17 @@
                 val === "Rejected" ||
                 val === "Withdrawn"
             ) {
-                $('#followup-wrapper').hide();
+
+                $('#follow_up_date').val('');
+                $('#follow_up_date').prop('disabled', true);
+
+                $('#followup-wrapper').css('opacity', '0.5');
             }
             else {
-                $('#followup-wrapper').show();
+
+                $('#follow_up_date').prop('disabled', false);
+
+                $('#followup-wrapper').css('opacity', '1');
             }
         }
 
@@ -217,14 +230,82 @@
 
             let val = $('#work_type').val();
 
+            const location = $('#location');
+            const locationLabel = $('label[for="location"]');
+
+            const addressGroup = $('#office-address-group');
+            const mapsGroup = $('#maps-link-group');
+
             if (val === "Remote") {
-                $('#location').prop('required', false);
+
+                location.prop('required', false);
+                location.attr(
+                    'placeholder',
+                    'Remote / India / Global'
+                );
+
+                if (locationLabel.length) {
+                    locationLabel.text('Location (Optional)');
+                }
+
+                $('#office_address').val('');
+                $('#maps_link').val('');
+
+                addressGroup.hide();
+                mapsGroup.hide();
             }
-            else if (val === "On-site" || val === "Hybrid") {
-                $('#location').prop('required', true);
+
+            else if (
+                val === "On-site" ||
+                val === "Hybrid"
+            ) {
+
+                location.prop('required', true);
+                location.attr(
+                    'placeholder',
+                    'e.g. Mumbai'
+                );
+
+                if (locationLabel.length) {
+                    locationLabel.text('Location *');
+                }
+
+                addressGroup.show();
+                mapsGroup.show();
             }
+
+            else if (val === "Flexible") {
+
+                location.prop('required', false);
+                location.attr(
+                    'placeholder',
+                    'e.g. Mumbai / Flexible'
+                );
+
+                if (locationLabel.length) {
+                    locationLabel.text(
+                        'Location (Recommended)'
+                    );
+                }
+
+                addressGroup.show();
+                mapsGroup.show();
+            }
+
             else {
-                $('#location').prop('required', false);
+
+                location.prop('required', false);
+                location.attr(
+                    'placeholder',
+                    'e.g. Mumbai'
+                );
+
+                if (locationLabel.length) {
+                    locationLabel.text('Location');
+                }
+
+                addressGroup.show();
+                mapsGroup.show();
             }
         }
 

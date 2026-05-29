@@ -238,7 +238,14 @@
         "platformChart",
         {{ platform_labels|tojson }},
         {{ platform_counts|tojson }},
-        ['#6f42c1', '#20c997', '#fd7e14', '#0dcaf0', '#6610f2']
+        [
+            '#6f42c1',
+            '#20c997',
+            '#fd7e14',
+            '#0dcaf0',
+            '#6610f2',
+            '#6c757d' // Other
+        ]
     );
 
     /* Applications by Work Type */
@@ -307,6 +314,12 @@
                         }
                     },
                     x: {
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 8,
+                            maxRotation: 0,
+                            minRotation: 0
+                        },
                         grid: {
                             color: 'rgba(148, 163, 184, 0.08)'
                         }

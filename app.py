@@ -393,9 +393,6 @@ def update(application_id):
             if form.work_type.data == "Remote":
                 application.location = "Remote"
 
-            elif form.work_type.data == "Not Specified":
-                application.location = "Not Specified"
-
             else:
                 application.location = ""
 
@@ -430,19 +427,39 @@ def update(application_id):
         application.application_link = link
 
         # Maps Link Cleanup
-        maps = form.maps_link.data.strip() if form.maps_link.data else ""
+        # Office Address / Maps Logic
 
-        if maps and not maps.startswith(("http://", "https://")):
-            maps = "https://" + maps
+        if form.work_type.data == "Remote":
 
-        application.maps_link = maps
+            application.office_address = None
+            application.maps_link = None
 
-        # Other Fields
-        application.office_address = form.office_address.data.strip() if form.office_address.data else ""
+        else:
+
+            application.office_address = (
+                form.office_address.data.strip()
+                if form.office_address.data
+                else ""
+            )
+
+            maps = (
+                form.maps_link.data.strip()
+                if form.maps_link.data
+                else ""
+            )
+
+            if maps and not maps.startswith(("http://", "https://")):
+                maps = "https://" + maps
+
+            application.maps_link = maps
         application.notes = form.notes.data
         application.salary = form.salary.data
         application.contact_name = form.contact_name.data
-        application.contact_email = form.contact_email.data
+        application.contact_email = (
+            form.contact_email.data.strip()
+            if form.contact_email.data
+            else ""
+        )
 
         # Last Activity
         application.last_checked = date.today()
@@ -716,7 +733,7 @@ def analytics():
 
     days = [
         today - timedelta(days=i)
-        for i in range(13, -1, -1)
+        for i in range(29, -1, -1)
     ]
 
     labels = [day.strftime("%b %d") for day in days]
@@ -782,6 +799,10 @@ def analytics():
     else:
         avg_days_open = 0
 
+    # ==============================
+    # PLATFORM ANALYTICS
+    # ==============================
+
     platform_data = (
         db.session.query(
             JobApplication.applied_via,
@@ -796,16 +817,43 @@ def analytics():
         .all()
     )
 
-    platform_labels = [x[0] for x in platform_data]
-    platform_counts = [x[1] for x in platform_data]
+    # Standard platforms to display individually
+    standard_platforms = {
+        "LinkedIn",
+        "Indeed",
+        "Internshala",
+        "Naukri",
+        "Company Portal"
+    }
 
+    platform_counter = {}
+
+    for platform, count in platform_data:
+
+        # Group custom entries into "Other"
+        if platform not in standard_platforms:
+            platform = "Other"
+
+        # Merge counts
+        platform_counter[platform] = (
+                platform_counter.get(platform, 0) + count
+        )
+
+    # Final labels and counts
+    platform_labels = list(platform_counter.keys())
+    platform_counts = list(platform_counter.values())
+
+    # Top platform
     top_platform = None
     top_platform_count = 0
 
-    if platform_data:
-        best = max(platform_data, key=lambda x: x[1])
-        top_platform = best[0]
-        top_platform_count = best[1]
+    if platform_counter:
+        top_platform = max(
+            platform_counter,
+            key=platform_counter.get
+        )
+
+        top_platform_count = platform_counter[top_platform]
 
     work_data = (
         db.session.query(
