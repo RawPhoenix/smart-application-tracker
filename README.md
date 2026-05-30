@@ -223,7 +223,7 @@ cd smart-application-tracker
 ### Create Virtual Environment
 
 ```bash
-python -m venv venv
+python -m venv .venv
 ```
 
 Activate it:
@@ -231,13 +231,13 @@ Activate it:
 **Windows**
 
 ```bash
-venv\Scripts\activate
+.venv\Scripts\activate
 ```
 
 **Linux / macOS**
 
 ```bash
-source venv/bin/activate
+source .venv/bin/activate
 ```
 
 ### Install Dependencies
