@@ -114,6 +114,10 @@ if database_url.startswith("postgres://"):
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_pre_ping": True
+}
+
 app.config["REMEMBER_COOKIE_DURATION"] = (
     timedelta(days=30)
 )
