@@ -133,6 +133,8 @@ app.config["MAIL_USE_TLS"] = (
         os.getenv("MAIL_USE_TLS", "True") == "True"
 )
 
+app.config["MAIL_USE_SSL"] = False
+
 app.config["MAIL_USERNAME"] = os.getenv(
     "MAIL_USERNAME"
 )
