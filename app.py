@@ -147,6 +147,12 @@ app.config["MAIL_DEFAULT_SENDER"] = os.getenv(
 
 app.config["MAIL_TIMEOUT"] = 10
 
+print("MAIL_SERVER =", app.config["MAIL_SERVER"])
+print("MAIL_PORT =", app.config["MAIL_PORT"])
+print("MAIL_USE_TLS =", app.config["MAIL_USE_TLS"])
+print("MAIL_USERNAME =", app.config["MAIL_USERNAME"])
+print("MAIL_TIMEOUT =", app.config["MAIL_TIMEOUT"])
+
 # =========================
 # EXTENSIONS
 # =========================
@@ -530,16 +536,21 @@ from flask_mail import Message
 
 @app.route("/test-mail")
 def test_mail():
-    msg = Message(
-        subject="SMTP Test",
-        recipients=["shettyjithesh41@gmail.com"]
-    )
+    try:
+        msg = Message(
+            subject="SMTP Test",
+            recipients=["your_email@gmail.com"]
+        )
 
-    msg.body = "Testing email from Render"
+        msg.body = "SMTP test"
 
-    mail.send(msg)
+        mail.send(msg)
 
-    return "Mail sent"
+        return "Mail sent"
+
+    except Exception as e:
+        print("FULL MAIL ERROR:", repr(e))
+        return str(e), 500
 
 
 @app.route('/reset-password/<token>', methods=['GET', 'POST'])
