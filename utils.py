@@ -101,13 +101,16 @@ def send_reset_email(user):
     msg.body = f"""
 Hello {user.username},
 
-To reset your password, visit the following link:
+To reset your password, visit:
 
 {reset_url}
 
-This link will expire in 1 hour.
-
-If you did not request this, simply ignore this email.
+This link expires in 1 hour.
 """
 
-    mail.send(msg)
+    try:
+        mail.send(msg)
+        print("EMAIL SENT SUCCESSFULLY")
+    except Exception as e:
+        print("MAIL ERROR:", str(e))
+        raise
