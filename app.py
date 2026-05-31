@@ -82,7 +82,6 @@ from services.application_manager import ApplicationManager
 # =========================
 from utils import (
     verify_reset_token,
-    send_reset_email,
     is_strong_password
 )
 
@@ -512,7 +511,8 @@ def forgot_password():
         user = User.query.filter_by(email=form.email.data).first()
 
         if user:
-            send_reset_email(user)
+            print(f"Found user: {user.email}")
+            # send_reset_email(user)
 
         flash(
             'If an account with that email exists, a password reset link has been sent.',
